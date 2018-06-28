@@ -45,13 +45,16 @@ start_node () {
     done
 }
 
+# get the env file and source it so we can use the variables both in this script and the container
+envfile="$1"
+. ${envfile}
+
 # This is exported to propagate into the pybot processes launched by pabot
 export RUN_AS_OPS_USER=${RUN_AS_OPS_USER:-${DEFAULT_RUN_AS_OPS_USER}}
 
 PARALLEL_JOBS=${PARLLEL_JOBS:-${DEFAULT_PARALLEL_JOBS}}
 LOG_UPLOAD_DEST="${LOG_UPLOAD_DEST:-${DEFAULT_LOG_UPLOAD_DEST}}"
 
-envfile="$1"
 
 # process the CLI arguments
 target="$2"
@@ -118,17 +121,17 @@ start_node firefox2 selenium/node-firefox:3.9.1
 start_node firefox3 selenium/node-firefox:3.9.1
 start_node firefox4 selenium/node-firefox:3.9.1
 
-n=0 && rm -f "${input}"
-until [ $n -ge 5 -o -f "${input}" ]; do
+n=0 && rm -f "$Repo/${input}"
+until [ $n -ge 5 -o -f "$Repo/${input}" ]; do
     echo "Retry.. $n"
     echo "Downloading gcp file ${input}"
-    wget -nv https://storage.googleapis.com/${ARTIFACT_BUCKET}/${input}
+    wget --directory-prefix=$Repo/ --unlink -nv https://storage.googleapis.com/${ARTIFACT_BUCKET}/${input}
 
     ((n++))
     sleep 15
 done
 
-if [ ! -f  "${input}" ]; then
+if [ ! -f  "$Repo/${input}" ]; then
     echo "VIC Product OVA download failed..quitting the run"
     exit
 else
