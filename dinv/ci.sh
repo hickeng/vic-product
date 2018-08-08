@@ -8,6 +8,8 @@ git_rev=$(git rev-parse HEAD)
 
 namespace="vmware"
 
+ci_registry="wdc-harbor-ci.eng.vmware.com/default-project/"
+
 if [[ ! $mods =~ $triggers ]]; then
   echo "Not testing, build not triggered"
   exit 0
@@ -30,6 +32,9 @@ function build {
     docker build -t "${namespace}/${name}:${rev}-${git_rev}" "$version"
     docker tag "${namespace}/${name}:${rev}-${git_rev}" "${namespace}/${name}:${rev}"
     echo "[${name}:${rev}] built"
+    docker tag "${namespace}/${name}:${rev}-${git_rev}" "${ci_registry}/${name}:${rev}"
+    docker push "${ci_registry}/${name}:${rev}"
+    echo "[${ci_registry}/${name}:${rev}] pushed"
   done
 
 }

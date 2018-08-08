@@ -31,7 +31,7 @@ Setup Base State
     # push dch-photon:17.06 image
     ${harbor-image-name}=  Set Variable  %{OVA_IP}/${DEFAULT_HARBOR_PROJECT}/${sample-image-name}
     ${harbor-image-tagged}=  Set Variable  ${harbor-image-name}:${sample-image-tag}
-    ${dinv-image-name}= Set Variable ${dinv-namespace}/${sample-image-name}:${dinv-image-tag}
+    ${dinv-image-name}=  Set Variable ${dinv-namespace}/${sample-image-name}:${dinv-image-tag}
     Run command and Return output  ${DEFAULT_LOCAL_DOCKER} ${DEFAULT_LOCAL_DOCKER_ENDPOINT} tag ${dinv-image-name} ${harbor-image-tagged}
     Log To Console  \n${dinv-image-name} tagged successfully
     Push Docker Image To Harbor Registry  %{OVA_IP}  ${harbor-image-tagged}
